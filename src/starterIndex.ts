@@ -1,19 +1,26 @@
-import { App, ItemView, Platform, Plugin, PluginSettingTab, Setting, WorkspaceLeaf } from 'obsidian';
+import {
+    App,
+    ItemView,
+    Platform,
+    Plugin,
+    PluginSettingTab,
+    Setting,
+    WorkspaceLeaf,
+} from "obsidian";
 
-import DiceRoller from "./ui/DIceRoller.svelte";
+import DiceRoller from "./ui/DiceRoller.svelte";
 
 const VIEW_TYPE = "svelte-view";
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
-    mySetting: string;
+interface ObsidianClickUpOptions {
+    clickUpApiKey: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-    mySetting: 'default'
-}
-
+const DEFAULT_SETTINGS: ObsidianClickUpOptions = {
+    clickUpApiKey: "",
+};
 
 class MySvelteView extends ItemView {
     view: DiceRoller;
@@ -31,15 +38,17 @@ class MySvelteView extends ItemView {
     }
 
     async onOpen(): Promise<void> {
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.view = new DiceRoller({ target: (this as any).contentEl, props: {} });
+        this.view = new DiceRoller({
+            target: (this as any).contentEl,
+            props: {},
+        });
     }
 }
 
-export default class MyPlugin extends Plugin {
+export default class ObsidianClickUp extends Plugin {
     private view: MySvelteView;
-    settings: MyPluginSettings;
+    settings: ObsidianClickUpOptions;
 
     async onload() {
         await this.loadSettings();
@@ -52,16 +61,18 @@ export default class MyPlugin extends Plugin {
         this.app.workspace.onLayoutReady(this.onLayoutReady.bind(this));
 
         // This creates an icon in the left ribbon.
-        this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => this.openMapView());
+        this.addRibbonIcon("checkmark", "Obsidian ClickUp", (evt: MouseEvent) =>
+            this.openMapView()
+        );
 
         // This adds a simple command that can be triggered anywhere
         this.addCommand({
-            id: 'open-sample-modal-simple',
-            name: 'Open sample modal (simple)',
+            id: "open-sample-modal-simple",
+            name: "Open sample modal (simple)",
             callback: () => this.openMapView(),
         });
         // This adds a settings tab so the user can configure various aspects of the plugin
-        this.addSettingTab(new SampleSettingTab(this.app, this));
+        this.addSettingTab(new ObsidianClikUpSettingTab(this.app, this));
     }
 
     onLayoutReady(): void {
@@ -73,12 +84,14 @@ export default class MyPlugin extends Plugin {
         });
     }
 
-    onunload() {
-
-    }
+    onunload() {}
 
     async loadSettings() {
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        this.settings = Object.assign(
+            {},
+            DEFAULT_SETTINGS,
+            await this.loadData()
+        );
     }
 
     async saveSettings() {
@@ -97,10 +110,10 @@ export default class MyPlugin extends Plugin {
     }
 }
 
-class SampleSettingTab extends PluginSettingTab {
-    plugin: MyPlugin;
+class ObsidianClikUpSettingTab extends PluginSettingTab {
+    plugin: ObsidianClickUp;
 
-    constructor(app: App, plugin: MyPlugin) {
+    constructor(app: App, plugin: ObsidianClickUp) {
         super(app, plugin);
         this.plugin = plugin;
     }
@@ -110,17 +123,21 @@ class SampleSettingTab extends PluginSettingTab {
 
         containerEl.empty();
 
-        containerEl.createEl('h2', { text: 'Settings for my awesome plugin.' });
+        containerEl.createEl("h2", { text: "Obsidian ClickUp Settings" });
 
         new Setting(containerEl)
-            .setName('Setting #1')
-            .setDesc('It\'s a secret')
-            .addText(text => text
-                .setPlaceholder('Enter your secret')
-                .setValue(this.plugin.settings.mySetting)
-                .onChange(async (value) => {
-                    this.plugin.settings.mySetting = value;
-                    await this.plugin.saveSettings();
-                }));
+            .setName("ClickUp API Key")
+            .setDesc(
+                "Found in 'My Settings' > 'My Apps' > 'Apps' > Click Generate"
+            )
+            .addText((text) =>
+                text
+                    .setPlaceholder("Enter your API key")
+                    .setValue(this.plugin.settings.clickUpApiKey)
+                    .onChange(async (value) => {
+                        this.plugin.settings.clickUpApiKey = value;
+                        await this.plugin.saveSettings();
+                    })
+            );
     }
 }
