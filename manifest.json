@@ -1,6 +1,6 @@
 {
 	"id": "obsidian-clickup",
-	"name": "Obsidian Clickup",
+	"name": "Clickup Plugin",
 	"version": "0.0.1",
 	"minAppVersion": "1.0.0",
 	"description": "A conection between ClickUp and Obsidian",

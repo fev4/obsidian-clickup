@@ -1,12 +1,10 @@
 import {
-    App,
     ItemView,
     Platform,
     Plugin,
-    PluginSettingTab,
-    Setting,
     WorkspaceLeaf,
 } from "obsidian";
+import { SettingsTab } from "./settings";
 
 import DiceRoller from "./ui/DiceRoller.svelte";
 
@@ -46,7 +44,7 @@ class MySvelteView extends ItemView {
     }
 }
 
-export default class ObsidianClickUp extends Plugin {
+export default class ClickUpPlugin extends Plugin {
     private view: MySvelteView;
     settings: ObsidianClickUpOptions;
 
@@ -72,7 +70,7 @@ export default class ObsidianClickUp extends Plugin {
             callback: () => this.openMapView(),
         });
         // This adds a settings tab so the user can configure various aspects of the plugin
-        this.addSettingTab(new ObsidianClikUpSettingTab(this.app, this));
+        this.addSettingTab(new SettingsTab(this.app, this));
     }
 
     onLayoutReady(): void {
@@ -110,34 +108,3 @@ export default class ObsidianClickUp extends Plugin {
     }
 }
 
-class ObsidianClikUpSettingTab extends PluginSettingTab {
-    plugin: ObsidianClickUp;
-
-    constructor(app: App, plugin: ObsidianClickUp) {
-        super(app, plugin);
-        this.plugin = plugin;
-    }
-
-    display(): void {
-        const { containerEl } = this;
-
-        containerEl.empty();
-
-        containerEl.createEl("h2", { text: "Obsidian ClickUp Settings" });
-
-        new Setting(containerEl)
-            .setName("ClickUp API Key")
-            .setDesc(
-                "Found in 'My Settings' > 'My Apps' > 'Apps' > Click Generate"
-            )
-            .addText((text) =>
-                text
-                    .setPlaceholder("Enter your API key")
-                    .setValue(this.plugin.settings.clickUpApiKey)
-                    .onChange(async (value) => {
-                        this.plugin.settings.clickUpApiKey = value;
-                        await this.plugin.saveSettings();
-                    })
-            );
-    }
-}
